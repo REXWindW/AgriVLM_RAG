@@ -1,0 +1,1 @@
+from agrirag.database.faiss_db import ImageFeatureStore

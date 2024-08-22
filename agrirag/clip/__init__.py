@@ -1,0 +1,1 @@
+from agrirag.clip.features import CLIPFeatureExtractor
