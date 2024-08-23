@@ -5,7 +5,9 @@
 - 可以通过API调用GPT-4o作为reranker。
 
 - TODO：也可以在本地对minicpm等模型进行微调以实现全过程能够本地化。
-## 组成部分
+## Architecture
+
+![Architecture](./docs/architecture2.drawio.png "Architecture")
 
 目录结构
 ```
