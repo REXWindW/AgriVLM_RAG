@@ -1,4 +1,14 @@
 import requests
+import base64
+
+
+# get base64 image
+def encode_image(image_path): # to encode image to base64
+  with open(image_path, "rb") as image_file:
+    return base64.b64encode(image_file.read()).decode('utf-8')
+
+
+
 class GPT_reranker:
     '''
     GPT reranker
@@ -10,73 +20,49 @@ class GPT_reranker:
         self.api_key = api_key
         self.img_key = img_key
 
-    def get_img_url(self, img_path):
-        '''
-        图像上传图床并且获取url
-        使用图床：http://pic.qingchengkg.cn/
-        参数：
-        img_path: 图像路径
-        返回值：
-        url: 图像url
-        '''
-        # header
-        headers = {}
-        headers['Authorization'] = f'Bearer {self.img_key}'
-
-        files = {'fileupload': open(image_path, 'rb')}
-        response = requests.post(upload_url, headers=headers, files=files)# get response
-
-        # deal with response
-        if response.status_code == 200:
-            json_response = response.json()
-            if json_response.get("success"):
-                # print("Image uploaded successfully!")
-                # print("Image URL:", json_response.get("url"))
-                url =  json_reponse.get("url")
-            else:
-                print("Upload failed:", json_response.get("error"))
-        else:
-            print("Failed to connect to the server. Status code:", response.status_code)
-
-        return url
-
-    def rerank(self,url_list:list):
+    def rerank(self,input_image, img_list:list):
         '''
         使用gpt进行rerank
         参数：
-        url_list: 图像url列表,需要另外写一个函数从img list转换到url list
+        img_list: 一个list，每个元素对应json中的一个dict，包含path, id, label
         返回值：
-        rerank_list: rerank后的图像列表
+        rerank_list: rerank后的图片列表，为了统一格式，使用同样的dict的list返回
         '''
-        # url_list = []
-        # for img in img_list:
-        #     img_url = self.get_img_url(img)
-        #     url_list.append(img_url)
-
-        gpt_url = "https://api.chatanywhere.tech/v1/chat/completions"
-
-        # gpt header
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
         
+        # system prompt 参考：https://chatgptcn.readthedocs.io/zh-cn/latest/prompt/system_prompt_cn/
         history = [
             {
                 "role": "system",
-                "content": "You are a helpful AI assistant to compare different images."
+                "content": "你是一个农业的叶片图像比较器，你会被给予一张输入叶片图片，和几张从数据库中检索的叶片图像和对应描述。你需要从中找出和输入叶片图片在病害特征上最相似的叶片图像，并返回其id。"
             }
         ]
 
-        for idx,url in enumerate(url_list):
-            if idx==0:
-                tmp = {
+        for idx,row in enumerate(img_list):
+            path = row['path']
+            idx = row['id']
+            description = row['label'] # 输入图像的description=None
+
+            base64_image = encode_image(path) # get base64
+
+            if idx==0: # 
+                tmp = 
+                {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "Returns the ID of the most similar image without redundant output, reference image:"},
-                        {"type": "image_url", "image_url": {"url" : url}}
+                        {
+                        "type": "text",
+                        "text": f"输入叶片图片："
+                        },
+                        {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}
+                        }
                     ]
-                }
+        }
 
             else:
                 tmp = {
@@ -105,6 +91,36 @@ class GPT_reranker:
             return response_json['choices'][0]['message']['content']
         else:
             print(f"Error: {response.status_code}, {response.text}")
+
+    def get_img_url(self, img_path): # 暂时不需要了
+        '''
+        图像上传图床并且获取url
+        使用图床：http://pic.qingchengkg.cn/
+        参数：
+        img_path: 图像路径
+        返回值：
+        url: 图像url
+        '''
+        # header
+        headers = {}
+        headers['Authorization'] = f'Bearer {self.img_key}'
+
+        files = {'fileupload': open(image_path, 'rb')}
+        response = requests.post(upload_url, headers=headers, files=files)# get response
+
+        # deal with response
+        if response.status_code == 200:
+            json_response = response.json()
+            if json_response.get("success"):
+                # print("Image uploaded successfully!")
+                # print("Image URL:", json_response.get("url"))
+                url =  json_reponse.get("url")
+            else:
+                print("Upload failed:", json_response.get("error"))
+        else:
+            print("Failed to connect to the server. Status code:", response.status_code)
+
+        return url
 
 
 if __name__ == '__main__':
