@@ -17,3 +17,7 @@ agrirag
 ```
 
 ## Requirements
+
+## 日志
+- 24.08.23 发现没有上传图床的必要，GPT4o支持base64上传图片
+  - openai文档：https://platform.openai.com/docs/guides/vision/uploading-base-64-encoded-images

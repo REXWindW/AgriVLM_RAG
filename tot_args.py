@@ -10,6 +10,8 @@ def parse_args():
     
     parser.add_argument('--clip_model', type=str, help="clip model type", default="openai/clip-vit-base-patch32")
     parser.add_argument('--embed_dim', type=int, help="feature dim", default=512)
+    parser.add_argument('--detector_weight_path',type=str, help="detector weight path", default="")
+    
     
     # 解析参数
     args = parser.parse_args()
