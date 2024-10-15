@@ -3,7 +3,7 @@ import requests
 import base64
 
 def call_gpt(message_list):
-    api_key = "sk-JYxUur2qWtLjVR6FI8EaVyKCD4MGfJHlk8gNfURwo4B5JLl5"
+    api_key = "xxx"
     gpt_url = "https://api.chatanywhere.tech/v1/chat/completions"
     headers = {
             "Authorization": f"Bearer {api_key}",
